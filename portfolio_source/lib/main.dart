@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:portfolio_source/sections/footer.dart';
-import 'package:portfolio_source/sections/intro.dart';
+import 'package:portfolio_source/sections/section_index.dart';
 import 'package:portfolio_source/widgets/app_bar.dart';
 
 void main() {
@@ -27,11 +26,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()
+      ..addListener(() {
+        print(_scrollController.position);
+      });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: NestedScrollView(
+          controller: _scrollController,
           physics: AlwaysScrollableScrollPhysics(
             parent: BouncingScrollPhysics(),
           ),
@@ -58,6 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   delegate: SliverChildListDelegate(
                     [
                       Intro(),
+                      Intro(),
+                      BlogsIntro(),
+                      TalksIntro(),
+                      ProjectsIntro(),
                       Footer(),
                     ],
                   ),
