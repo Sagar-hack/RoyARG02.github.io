@@ -14,6 +14,7 @@ class PortfolioAppBar extends StatelessWidget {
         Provider.of<CommonParameters>(context);
     return MediaQuery.removePadding(
       context: context,
+      removeBottom: true,
       child: SliverPersistentHeader(
         pinned: true,
         delegate: _IosStyleMaterialSliverDelegete(
