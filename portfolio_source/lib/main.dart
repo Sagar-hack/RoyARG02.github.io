@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:portfolio_source/sections/section_index.dart';
 import 'package:portfolio_source/widgets/app_bar.dart';
 
-const Duration _appBarCollapseDuration = Duration(milliseconds: 60);
+const Duration _appBarCollapseDuration = Duration(milliseconds: 70);
 
 void main() {
   runApp(MyApp());
@@ -78,13 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: NotificationListener<ScrollUpdateNotification>(
           onNotification: (scrollNotification) {
-            print(
-                '${scrollNotification.scrollDelta}, ${scrollNotification.metrics.pixels}');
+            print('${scrollNotification.metrics.pixels}');
             if (scrollNotification.scrollDelta > 0.0) {
               //forward
               if (scrollNotification.metrics.pixels <
                   (appBarExpandedHeight - kToolbarHeight)) {
-                print('Collapse');
                 Future.delayed(
                   Duration.zero,
                   () => _scrollAnimate(
@@ -95,7 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
               //reverse
               if (scrollNotification.metrics.pixels <
                   (appBarExpandedHeight - kToolbarHeight)) {
-                print('Expand');
                 Future.delayed(
                   Duration.zero,
                   () => _scrollAnimate(animateTo: 0.0),
