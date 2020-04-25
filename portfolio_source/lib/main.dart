@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:portfolio_source/providers/common_parameters.dart';
+
+import 'package:provider/provider.dart';
 
 import 'package:portfolio_source/sections/section_index.dart';
 import 'package:portfolio_source/widgets/app_bar.dart';
+
+const Duration _appBarCollapseDuration = Duration(milliseconds: 60);
 
 void main() {
   runApp(MyApp());
@@ -15,7 +20,20 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: MyHomePage(),
+      home: Setup(),
+    );
+  }
+}
+
+class Setup extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Provider<CommonParameters>.value(
+      value: CommonParameters(context),
+      updateShouldNotify:
+          (CommonParameters oldParameters, CommonParameters newParameters) =>
+              false,
+      child: MyHomePage(),
     );
   }
 }
@@ -31,10 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController()
-      ..addListener(() {
-        print(_scrollController.position);
-      });
+    _scrollController = ScrollController()..addListener(_scrollListener);
   }
 
   @override
@@ -43,48 +58,69 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  void _scrollListener() {
+    // listener functions here
+  }
+
+  void _scrollAnimate({double animateTo}) async {
+    await _scrollController.animateTo(
+      animateTo,
+      duration: _appBarCollapseDuration,
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final double appBarExpandedHeight =
+        Provider.of<CommonParameters>(context).appBarExpandedHeight;
     return Scaffold(
       body: Center(
-        child: NestedScrollView(
-          controller: _scrollController,
-          physics: AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
-          ),
-          headerSliverBuilder: (BuildContext context, bool isScrollable) {
-            return [
-              SliverOverlapAbsorber(
-                handle:
-                    NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                sliver: PortfolioAppBar(),
-              ),
-            ];
+        child: NotificationListener<ScrollUpdateNotification>(
+          onNotification: (scrollNotification) {
+            print(
+                '${scrollNotification.scrollDelta}, ${scrollNotification.metrics.pixels}');
+            if (scrollNotification.scrollDelta > 0.0) {
+              //forward
+              if (scrollNotification.metrics.pixels <
+                  (appBarExpandedHeight - kToolbarHeight)) {
+                print('Collapse');
+                Future.delayed(
+                  Duration.zero,
+                  () => _scrollAnimate(
+                      animateTo: appBarExpandedHeight - kToolbarHeight),
+                );
+              }
+            } else if (scrollNotification.scrollDelta < 0.0) {
+              //reverse
+              if (scrollNotification.metrics.pixels <
+                  (appBarExpandedHeight - kToolbarHeight)) {
+                print('Expand');
+                Future.delayed(
+                  Duration.zero,
+                  () => _scrollAnimate(animateTo: 0.0),
+                );
+              }
+            }
+            return true;
           },
-          body: Builder(
-            builder: (context) => CustomScrollView(
-              physics: AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              PortfolioAppBar(),
+              SliverList(
+                delegate: SliverChildListDelegate.fixed(
+                  [
+                    Intro(),
+                    Intro(), //! Mock display
+                    BlogsIntro(),
+                    TalksIntro(),
+                    ProjectsIntro(),
+                    Footer(),
+                  ],
+                ),
               ),
-              slivers: [
-                SliverOverlapInjector(
-                  handle:
-                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                ),
-                SliverList(
-                  delegate: SliverChildListDelegate(
-                    [
-                      Intro(),
-                      Intro(),
-                      BlogsIntro(),
-                      TalksIntro(),
-                      ProjectsIntro(),
-                      Footer(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
         ),
       ),

@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
+import 'package:portfolio_source/providers/common_parameters.dart';
+
 class PortfolioAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final double appBarExpandedHeight =
+        Provider.of<CommonParameters>(context).appBarExpandedHeight;
     return SliverAppBar(
-      expandedHeight: MediaQuery.of(context).size.height * 0.8,
+      expandedHeight: appBarExpandedHeight,
       pinned: true,
       title: Text('Anurag Roy'),
       flexibleSpace: FlexibleSpaceBar(
-        stretchModes: [StretchMode.fadeTitle],
         title: Text('Anurag Roy'),
         centerTitle: true,
       ),
