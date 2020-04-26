@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:portfolio_source/providers/common_parameters.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:portfolio_source/providers/common_parameters.dart';
 import 'package:portfolio_source/sections/section_index.dart';
+import 'package:portfolio_source/ui/themes.dart';
 import 'package:portfolio_source/widgets/app_bar.dart';
 
 const Duration _appBarCollapseDuration = Duration(milliseconds: 70);
@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Anurag Roy',
       themeMode: ThemeMode.system,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: buildLightTheme(),
+      darkTheme: buildDarkTheme(),
       home: Setup(),
     );
   }
@@ -46,11 +46,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ScrollController _scrollController;
+  bool _shouldAppbarChangeSize;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
+    _shouldAppbarChangeSize = false;
   }
 
   @override
@@ -76,61 +78,62 @@ class _MyHomePageState extends State<MyHomePage> {
     final double appBarExpandedHeight =
         Provider.of<CommonParameters>(context).appBarExpandedHeight;
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: Theme.of(context).primaryColorBrightness == Brightness.dark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
-        child: Material(
-          color: Theme.of(context).primaryColor,
-          elevation: Theme.of(context).appBarTheme.elevation ?? 4.0,
-          child: SafeArea(
-            top: true,
-            bottom: false,
-            child: NotificationListener<ScrollUpdateNotification>(
-              onNotification: (scrollNotification) {
-                print('${scrollNotification.metrics.pixels}');
-                if (scrollNotification.scrollDelta > 0.0) {
-                  //forward
-                  if (scrollNotification.metrics.pixels <
-                      (appBarExpandedHeight - kToolbarHeight)) {
-                    Future.delayed(
-                      Duration.zero,
-                      () => _scrollAnimate(
-                          animateTo: appBarExpandedHeight - kToolbarHeight),
-                    );
-                  }
-                } else if (scrollNotification.scrollDelta < 0.0) {
-                  //reverse
-                  if (scrollNotification.metrics.pixels <
-                      (appBarExpandedHeight - kToolbarHeight)) {
-                    Future.delayed(
-                      Duration.zero,
-                      () => _scrollAnimate(animateTo: 0.0),
-                    );
-                  }
-                }
-                return true;
-              },
-              child: CustomScrollView(
-                controller: _scrollController,
-                slivers: [
-                  PortfolioAppBar(),
-                  SliverList(
-                    delegate: SliverChildListDelegate.fixed(
-                      [
-                        Intro(),
-                        Intro(), //! Mock display
-                        BlogsIntro(),
-                        TalksIntro(),
-                        ProjectsIntro(),
-                        Footer(),
-                      ],
-                    ),
-                  ),
+      body: NotificationListener<ScrollUpdateNotification>(
+        onNotification: (scrollNotification) {
+          // print('${scrollNotification.metrics.pixels}');
+          if (scrollNotification.scrollDelta > 0.0) {
+            //forward
+            if (scrollNotification.metrics.pixels <
+                (appBarExpandedHeight - kToolbarHeight)) {
+              //Cancel intent the first time user tries to scroll
+              // if (!_shouldAppbarChangeSize) {
+              //   setState(() {
+              //     _shouldAppbarChangeSize = true;
+              //   });
+              //   return true;
+              // }
+              Future.delayed(
+                Duration.zero,
+                () => _scrollAnimate(
+                    animateTo: appBarExpandedHeight - kToolbarHeight),
+              );
+            }
+          } else if (scrollNotification.scrollDelta < 0.0) {
+            //reverse
+            if (scrollNotification.metrics.pixels <
+                (appBarExpandedHeight - kToolbarHeight)) {
+              //Cancel intent the first time user tries to scroll
+              // if (_shouldAppbarChangeSize) {
+              //   setState(() {
+              //     _shouldAppbarChangeSize = false;
+              //   });
+              //   return true;
+              // }
+              Future.delayed(
+                Duration.zero,
+                () => _scrollAnimate(animateTo: 0.0),
+              );
+            }
+          }
+          return true;
+        },
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            PortfolioAppBar(),
+            SliverList(
+              delegate: SliverChildListDelegate.fixed(
+                [
+                  Intro(),
+                  Intro(), //! Mock display
+                  BlogsIntro(),
+                  TalksIntro(),
+                  ProjectsIntro(),
+                  Footer(),
                 ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

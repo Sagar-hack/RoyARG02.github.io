@@ -8,12 +8,15 @@ class Footer extends StatelessWidget {
       color: Theme.of(context).primaryColor,
       padding: const EdgeInsets.all(16.0),
       alignment: Alignment.center,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Copyright(),
-          FlutterWebInfo(),
-        ],
+      child: DefaultTextStyle(
+        style: Theme.of(context).primaryTextTheme.caption,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Copyright(),
+            FlutterWebInfo(),
+          ],
+        ),
       ),
     );
   }
