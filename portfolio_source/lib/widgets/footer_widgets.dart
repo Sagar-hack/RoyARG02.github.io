@@ -15,8 +15,9 @@ class FlutterWebInfo extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text('Built with '),
-        FlutterLogo(colors: Colors.indigo,),
-        Text(' web'),
+        FlutterLogo(
+          colors: Colors.indigo,
+        ),
       ],
     );
   }

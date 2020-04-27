@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class AvatarBuilder extends StatelessWidget {
   const AvatarBuilder({
     @required this.maxAvatarRadius,
-    @required this.shrinkOffset,
+    @required this.normalizedShrinkOffset,
     @required this.minAvatarRadius,
     this.avatarBackgroundImage,
   });
 
   final double maxAvatarRadius;
-  final double shrinkOffset;
+  final double normalizedShrinkOffset;
   final double minAvatarRadius;
   final ImageProvider avatarBackgroundImage;
 
@@ -22,7 +22,7 @@ class AvatarBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     final double avatarSizeExpansion = maxAvatarRadius - minAvatarRadius;
     final double avatarSize =
-        maxAvatarRadius - (shrinkOffset * avatarSizeExpansion);
+        maxAvatarRadius - (normalizedShrinkOffset * avatarSizeExpansion);
     // print(avatarSize);
     return Container(
       height: avatarSize,

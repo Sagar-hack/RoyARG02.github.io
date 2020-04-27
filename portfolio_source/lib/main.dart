@@ -3,14 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:portfolio_source/providers/common_parameters.dart';
+import 'package:portfolio_source/providers/theme_provider.dart';
+
 import 'package:portfolio_source/sections/section_index.dart';
+
 import 'package:portfolio_source/ui/themes.dart';
 import 'package:portfolio_source/widgets/app_bar.dart';
 
 const Duration _appBarCollapseDuration = Duration(milliseconds: 70);
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AppTheme>(
+          create: (_) => AppTheme(),
+        )
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -18,7 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Anurag Roy',
-      themeMode: ThemeMode.system,
+      themeMode: Provider.of<AppTheme>(context).appThemeMode,
       theme: buildLightTheme(),
       darkTheme: buildDarkTheme(),
       home: Setup(),
@@ -46,13 +58,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ScrollController _scrollController;
-  bool _shouldAppbarChangeSize;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
-    _shouldAppbarChangeSize = false;
   }
 
   @override
@@ -85,13 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //forward
             if (scrollNotification.metrics.pixels <
                 (appBarExpandedHeight - kToolbarHeight)) {
-              //Cancel intent the first time user tries to scroll
-              // if (!_shouldAppbarChangeSize) {
-              //   setState(() {
-              //     _shouldAppbarChangeSize = true;
-              //   });
-              //   return true;
-              // }
+              //TODO: Cancel intent the first time user tries to scroll
               Future.delayed(
                 Duration.zero,
                 () => _scrollAnimate(
@@ -102,13 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
             //reverse
             if (scrollNotification.metrics.pixels <
                 (appBarExpandedHeight - kToolbarHeight)) {
-              //Cancel intent the first time user tries to scroll
-              // if (_shouldAppbarChangeSize) {
-              //   setState(() {
-              //     _shouldAppbarChangeSize = false;
-              //   });
-              //   return true;
-              // }
               Future.delayed(
                 Duration.zero,
                 () => _scrollAnimate(animateTo: 0.0),
