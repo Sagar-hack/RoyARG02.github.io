@@ -1,9 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
 import 'package:portfolio_source/providers/common_parameters.dart';
-import 'package:portfolio_source/providers/theme_provider.dart';
+import 'package:portfolio_source/providers/app_theme.dart';
 
 import 'package:portfolio_source/sections/section_index.dart';
 
@@ -58,6 +59,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ScrollController _scrollController;
+  PointerDeviceKind _pointerDeviceKind;
 
   @override
   void initState() {
@@ -76,61 +78,84 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _scrollAnimate({double animateTo}) async {
-    await _scrollController.animateTo(
-      animateTo,
-      duration: _appBarCollapseDuration,
-      curve: Curves.fastOutSlowIn,
-    );
+    // await _scrollController.animateTo(
+    //   animateTo,
+    //   duration: _appBarCollapseDuration,
+    //   curve: Curves.fastOutSlowIn,
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
     final double appBarExpandedHeight =
         Provider.of<CommonParameters>(context).appBarExpandedHeight;
+
     return Scaffold(
+      endDrawer: Drawer(),
       body: NotificationListener<ScrollUpdateNotification>(
-        onNotification: (scrollNotification) {
-          // print('${scrollNotification.metrics.pixels}');
-          if (scrollNotification.scrollDelta > 0.0) {
-            //forward
-            if (scrollNotification.metrics.pixels <
-                (appBarExpandedHeight - kToolbarHeight)) {
+        onNotification: (scrollUpdate) {
+          print('${scrollUpdate.metrics.pixels}');
+          if (scrollUpdate.metrics.pixels <
+              (appBarExpandedHeight - kToolbarHeight)) {
+            if (scrollUpdate.scrollDelta > 0.0) {
+              //forward
               //TODO: Cancel intent the first time user tries to scroll
               Future.delayed(
                 Duration.zero,
                 () => _scrollAnimate(
                     animateTo: appBarExpandedHeight - kToolbarHeight),
               );
-            }
-          } else if (scrollNotification.scrollDelta < 0.0) {
-            //reverse
-            if (scrollNotification.metrics.pixels <
-                (appBarExpandedHeight - kToolbarHeight)) {
+            } else if (scrollUpdate.scrollDelta < 0.0) {
+              //reverse
               Future.delayed(
                 Duration.zero,
                 () => _scrollAnimate(animateTo: 0.0),
               );
             }
+            return true;
           }
-          return true;
+          return false;
         },
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            PortfolioAppBar(),
-            SliverList(
-              delegate: SliverChildListDelegate.fixed(
-                [
-                  Intro(),
-                  Intro(), //! Mock display
-                  BlogsIntro(),
-                  TalksIntro(),
-                  ProjectsIntro(),
-                  Footer(),
-                ],
-              ),
+        child: NotificationListener<ScrollEndNotification>(
+          // ScrollEndNotification works on touch-based inputs, but not on others
+          onNotification: (scrollEnd) {
+            // if(scrollEnd.metrics.pixels < (appBarExpandedHeight - kToolbarHeight) * 0.2){
+            //   Future.delayed(
+            //     Duration.zero,
+            //     () => _scrollAnimate(
+            //         animateTo: appBarExpandedHeight - kToolbarHeight),
+            //   );
+            // }else if(scrollEnd.metrics.pixels < ){
+
+            // }
+            print('Scroll End $_pointerDeviceKind');
+            return true;
+          },
+          child: Listener(
+            onPointerSignal: (pointerSignal) {
+              if (pointerSignal is PointerScrollEvent) {
+                _pointerDeviceKind = pointerSignal.kind;
+              }
+            },
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                PortfolioAppBar(),
+                SliverList(
+                  delegate: SliverChildListDelegate.fixed(
+                    [
+                      Intro(),
+                      Intro(), //! Mock display
+                      BlogsIntro(),
+                      TalksIntro(),
+                      ProjectsIntro(),
+                      Footer(),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:portfolio_source/providers/common_parameters.dart';
-import 'package:portfolio_source/providers/theme_provider.dart';
+import 'package:portfolio_source/providers/app_theme.dart';
 import 'package:portfolio_source/widgets/avatar_builder.dart';
 
 const _titleFadeDuration = Duration(milliseconds: 70);

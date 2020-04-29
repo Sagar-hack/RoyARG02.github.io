@@ -31,7 +31,7 @@ class AvatarBuilder extends StatelessWidget {
         //disable taps unless the avatar takes the smallest size
         onTap: avatarSize - minAvatarRadius < 0.001
             ? () {
-                print('Tapped');
+                Scaffold.of(context).openEndDrawer();
               }
             : null,
         highlightShape: BoxShape.circle,
