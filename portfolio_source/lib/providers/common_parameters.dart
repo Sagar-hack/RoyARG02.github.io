@@ -9,3 +9,7 @@ class CommonParameters {
       : appBarExpandedHeight = MediaQuery.of(context).size.height * 0.8,
         appBarAvatarMaxRadius = MediaQuery.of(context).size.height * 0.2;
 }
+
+
+final double kButtonBarHigherBreakpoint = 768.0;
+final double kButtonBarLowerBreakpoint = 480.0;

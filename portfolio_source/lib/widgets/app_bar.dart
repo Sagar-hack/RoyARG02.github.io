@@ -79,20 +79,20 @@ class _IosStyleMaterialSliverDelegate extends SliverPersistentHeaderDelegate {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Positioned(
-                  top: NavigationToolbar.kMiddleSpacing,
-                  bottom: NavigationToolbar.kMiddleSpacing,
-                  left: NavigationToolbar.kMiddleSpacing,
-                  right: NavigationToolbar.kMiddleSpacing,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: AnimatedOpacity(
-                      opacity: showExpandedTitle ? 1.0 : 0.0,
-                      child: title,
-                      duration: _titleFadeDuration,
+                  Positioned(
+                    top: NavigationToolbar.kMiddleSpacing,
+                    bottom: NavigationToolbar.kMiddleSpacing,
+                    left: NavigationToolbar.kMiddleSpacing,
+                    right: NavigationToolbar.kMiddleSpacing,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: AnimatedOpacity(
+                        opacity: showExpandedTitle ? 1.0 : 0.0,
+                        child: title,
+                        duration: _titleFadeDuration,
+                      ),
                     ),
                   ),
-                ),
                 Positioned(
                   top: 0.0,
                   left: 0.0,
@@ -150,6 +150,37 @@ class _PersistentAppBar extends StatelessWidget {
     this.isTitleVisible,
     @required this.normalizedShrinkOffset,
   });
+
+  final List<Widget> _moreOptions = [
+    FlatButton(
+      child: Text('Blogs'),
+      onPressed: () {},
+    ),
+    FlatButton(
+      child: Text('Talks'),
+      onPressed: () {},
+    ),
+    FlatButton(
+      child: Text('Projects'),
+      onPressed: () {},
+    ),
+  ];
+
+  final List<Widget> _someOptions = [
+    FlatButton(
+      child: Text('Resume'),
+      onPressed: () {},
+    ),
+    FlatButton(
+      child: Text('Github'),
+      onPressed: () {},
+    ),
+    FlatButton(
+      child: Text('Twitter'),
+      onPressed: () {},
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final AppTheme _appTheme = Provider.of<AppTheme>(context);
@@ -157,7 +188,11 @@ class _PersistentAppBar extends StatelessWidget {
       height: kToolbarHeight,
       child: NavigationToolbar(
         leading: Padding(
-          padding: const EdgeInsets.all(NavigationToolbar.kMiddleSpacing),
+          padding: const EdgeInsets.only(
+            left: NavigationToolbar.kMiddleSpacing,
+            top: NavigationToolbar.kMiddleSpacing,
+            bottom: NavigationToolbar.kMiddleSpacing,
+          ),
           child: AnimatedOpacity(
             opacity: isTitleVisible ? 1.0 : 0.0,
             duration: Duration(milliseconds: 300),
@@ -169,47 +204,42 @@ class _PersistentAppBar extends StatelessWidget {
             right: normalizedShrinkOffset * 48.0 +
                 NavigationToolbar.kMiddleSpacing,
           ),
-          child: ButtonBar(
-            //TODO: use layoutbuilder
-            layoutBehavior: ButtonBarLayoutBehavior.padded,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FlatButton(
-                child: Text('Blogs'),
-                onPressed: () {},
-              ),
-              FlatButton(
-                child: Text('Talks'),
-                onPressed: () {},
-              ),
-              FlatButton(
-                child: Text('Projects'),
-                onPressed: () {},
-              ),
-              FlatButton(
-                child: Text('Resume'),
-                onPressed: () {},
-              ),
-              Row(
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              bool shouldShowAll =
+                  constraints.maxWidth > kButtonBarHigherBreakpoint;
+              bool shouldShowNone =
+                  constraints.maxWidth <= kButtonBarLowerBreakpoint;
+              bool shouldShowSome = !shouldShowAll && !shouldShowNone;
+
+              return ButtonBar(
+                layoutBehavior: ButtonBarLayoutBehavior.padded,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  AnimatedCrossFade(
-                    duration: _titleFadeDuration,
-                    firstChild: FaIcon(FontAwesomeIcons.moon),
-                    secondChild: FaIcon(FontAwesomeIcons.sun),
-                    crossFadeState: _appTheme.isDarkTheme(context)
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                  ),
-                  Switch(
-                    value: _appTheme.isDarkTheme(context),
-                    onChanged: (_) =>
-                        Provider.of<AppTheme>(context, listen: false)
-                            .toggleThemeMode(context),
+                  if (shouldShowAll) ..._moreOptions,
+                  if (shouldShowSome || shouldShowAll) ..._someOptions,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedCrossFade(
+                        duration: _titleFadeDuration,
+                        firstChild: FaIcon(FontAwesomeIcons.moon),
+                        secondChild: FaIcon(FontAwesomeIcons.sun),
+                        crossFadeState: _appTheme.isDarkTheme(context)
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
+                      ),
+                      Switch(
+                        value: _appTheme.isDarkTheme(context),
+                        onChanged: (_) =>
+                            Provider.of<AppTheme>(context, listen: false)
+                                .toggleThemeMode(context),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
         ),
         middleSpacing: NavigationToolbar.kMiddleSpacing,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portfolio_source/sections/section_skeleton.dart';
+import 'package:portfolio_source/sections/section.dart';
 
 class ProjectsIntro extends StatelessWidget {
   @override
@@ -7,9 +7,10 @@ class ProjectsIntro extends StatelessWidget {
     return SectionSkeletion(
       heading: Text(
         'Projects',
-        style: Theme.of(context).textTheme.headline3,
       ),
-      content: SizedBox(),
+      content: <Widget>[
+        Text('The projects that I\'ve worked and collaborated with.'),
+      ],
     );
   }
 }

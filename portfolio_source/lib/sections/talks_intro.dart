@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portfolio_source/sections/section_skeleton.dart';
+import 'package:portfolio_source/sections/section.dart';
 
 class TalksIntro extends StatelessWidget {
   @override
@@ -7,9 +7,12 @@ class TalksIntro extends StatelessWidget {
     return SectionSkeletion(
       heading: Text(
         'Talks',
-        style: Theme.of(context).textTheme.headline3,
       ),
-      content: SizedBox(),
+      content: <Widget>[
+        Text(
+          'Speaking isn\'t really my thing, but I\'m happy and always eager to share my knowledge with the community.',
+        ),
+      ],
     );
   }
 }

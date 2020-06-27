@@ -141,23 +141,25 @@ class _MyHomePageState extends State<MyHomePage> {
               controller: _scrollController,
               slivers: [
                 PortfolioAppBar(),
-                SliverList(
-                  delegate: SliverChildListDelegate.fixed(
-                    [
-                      Intro(),
-                      Intro(), //! Mock display
-                      BlogsIntro(),
-                      TalksIntro(),
-                      ProjectsIntro(),
-                      Footer(),
-                    ],
+                SliverPadding(
+                    padding: const EdgeInsets.all(8.0),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate.fixed(
+                        [
+                          Intro(),
+                          BlogsIntro(),
+                          TalksIntro(),
+                          ProjectsIntro(),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
         ),
       ),
+      bottomNavigationBar: Footer(),
     );
   }
 }
